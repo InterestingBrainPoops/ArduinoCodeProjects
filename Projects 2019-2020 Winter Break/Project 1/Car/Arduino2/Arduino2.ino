@@ -80,12 +80,15 @@ void setup() {
   pinMode(echoPin, INPUT);  // set echoPin to input mode
   Serial.begin(9600);
 }
-/*
+
 void loop()
 {
-//    receiveData();
+    //radio.startListening();  
+    receiveData();
+    Serial.print(data[2]);
+    /*
     if(mode == 1||mode == 3){
-      radio.startListening();             // start monitoring
+      //radio.startListening();             // start monitoring
       receiveData();
       // calculate the steering angle of servo according to the direction joystick of remote control and the deviation
       dirServoDegree = map(data[0], 0, 1023,135 ,45 ) - (data[4] - 512) / 12;
@@ -102,7 +105,7 @@ void loop()
   }
 
   if(mode == 2){
-    radio.startListening();             // start monitoring
+    //radio.startListening();             // start monitoring
     receiveData();
       byte barDistance = maxDistance; // save the minimum measured distance from obstacles
       byte barDegree;                 // save the minimum measured angel from obstacles
@@ -182,13 +185,11 @@ void loop()
         if(cnt>=5){mode=1;break;}
       }
    }
+   */
 }
-*/
 
-void loop() {
-	Serial.println(getDistance());
-  delay(500);
-}
+
+
 void receiveData(){
    if ( radio.available()) {            // if receive the data
     while (radio.available()) {         // read all the data
