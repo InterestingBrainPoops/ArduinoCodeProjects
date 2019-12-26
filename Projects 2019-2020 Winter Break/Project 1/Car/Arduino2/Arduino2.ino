@@ -84,8 +84,7 @@ void setup() {
 void loop()
 {
     //radio.startListening();  
-    receiveData();
-    Serial.print(data[2]);
+    Serial.print(getDistance());
     /*
     if(mode == 1||mode == 3){
       //radio.startListening();             // start monitoring
