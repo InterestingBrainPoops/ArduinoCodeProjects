@@ -1,19 +1,19 @@
 /***********************************************************
 File name:  AdeeptMotor.ino
-Description:
-1. Under remote control mode:
-The car is completely controlled by the remote control.
-2. Under auto-control mode:
-The ultrasonic module will keep detecting obstacles in front
-of the car. When encountering and approaching one, the car will
-go backward, turn to another angle bypassing the obstacle, and
-continue to go forward.
+Description:  
+1. Under remote control mode: 
+The car is completely controlled by the remote control. 
+2. Under auto-control mode: 
+The ultrasonic module will keep detecting obstacles in front 
+of the car. When encountering and approaching one, the car will 
+go backward, turn to another angle bypassing the obstacle, and 
+continue to go forward. 
 
 
 Website: www.adeept.com
 E-mail: support@adeept.com
 Author: Tom
-Date: 2018/6/8
+Date: 2018/6/8 
 ***********************************************************/
 #include <SPI.h>
 #include "RF24.h"
@@ -26,14 +26,14 @@ int mode=1;
 
 Servo dirServo;                   // define servo to control turning of smart car
 int dirServoPin = 2;              // define pin for signal line of the last servo
-float dirServoOffset = 6;         // define a variable for deviation(degree) of the servo
+float dirServoOffset = 0;         // define a variable for deviation(degree) of the servo
 int dirServoDegree;
 Servo ultrasonicServo;            // define servo to control turning of ultrasonic sensor
 int ultrasonicPin = 3;            // define pin for signal line of the last servo
 float ultrasonicServoOffset = 15; // define a variable for deviation(degree) of the servo
 int ultrasonicServoDegree;
-int trigPin = 9;                  // define Trig pin for ultrasonic ranging module
-int echoPin = 10;                  // define Echo pin for ultrasonic ranging module
+int trigPin = 0;                  // define Trig pin for ultrasonic ranging module
+int echoPin = 1;                  // define Echo pin for ultrasonic ranging module
 
 float maxDistance = 200;          // define the range(cm) for ultrasonic ranging module, Maximum sensor distance is rated at 400-500cm.
 float soundVelocity = 340;        // Sound velocity = 340 m/s
@@ -49,9 +49,9 @@ const int pwmBPin = 5;    // define pin for PWM used to control rotational speed
 const int snsAPin = 0;    // define pin for detecting current of motor A
 const int snsBPin = 1;    // define pin for detecting current of motor B
 const int buzzerPin = 8;  // define pin for buzzer
-const int RPin = A3;
-const int GPin = A4;
-const int BPin = A5;
+const int RPin = A3; 
+const int GPin = A4; 
+const int BPin = A5; 
 int RGBVal = 0;
 
 #define FORWARD LOW
@@ -65,7 +65,7 @@ void setup() {
   radio.openReadingPipe(1,addresses[1]);
   radio.startListening();             // start monitoring
 
-//radio.stopListening();
+//radio.stopListening(); 
   dirServo.attach(dirServoPin);  // attaches the servo on servoDirPin to the servo object
   ultrasonicServo.attach(ultrasonicPin);  // attaches the servo on ultrasonicPin to the servo object
   pinMode(dirAPin, OUTPUT);   // set dirAPin to output mode
@@ -78,20 +78,18 @@ void setup() {
   pinMode(BPin, OUTPUT);   // set BPin to output mode
   pinMode(trigPin, OUTPUT); // set trigPin to output mode
   pinMode(echoPin, INPUT);  // set echoPin to input mode
-  Serial.begin(9600);
 }
 
 void loop()
 {
-    //radio.startListening();  
-    Serial.print(getDistance());
-    /*
+//    receiveData();
     if(mode == 1||mode == 3){
-      //radio.startListening();             // start monitoring
+      radio.startListening();             // start monitoring
       receiveData();
       // calculate the steering angle of servo according to the direction joystick of remote control and the deviation
-      dirServoDegree = map(data[0], 0, 1023,135 ,45 ) - (data[4] - 512) / 12;
-      ultrasonicServoDegree = map(data[5], 0, 1023, 135, 45) - (data[4] - 512) / 25;
+      //dirServoDegree = map(data[0], 0, 1023,135 ,45 ) - (data[4] - 512) / 12; 
+      dirServoDegree = 180-map(data[0], 0, 1023,135 ,45 ); 
+      ultrasonicServoDegree = map(data[5], 0, 1023, 135, 45) - (data[4] - 512) / 25; 
       // get the steering angle and speed of servo according to the speed joystick of remote control and the deviation
       int motorSpd = data[1] - 512 + (data[3] - 512) / 10;
       bool motorDir = motorSpd > 0 ? FORWARD : BACKWARD;
@@ -104,7 +102,7 @@ void loop()
   }
 
   if(mode == 2){
-    //radio.startListening();             // start monitoring
+    radio.startListening();             // start monitoring
     receiveData();
       byte barDistance = maxDistance; // save the minimum measured distance from obstacles
       byte barDegree;                 // save the minimum measured angel from obstacles
@@ -159,10 +157,10 @@ void loop()
       ctrlCar1(90-(data[4] - 512) / 12, BACKWARD, 0);   // make the smart car stop for preparation of next scanning
    }
    if(mode == 4){
-      radio.stopListening();
+      radio.stopListening(); 
       int cnt=0;
       // rotates the servo motor from 15 to 165 degrees
-      for(int i=15;i<=165;i++){
+      for(int i=15;i<=165;i++){  
         ultrasonicServo.write(i);
         delay(50);
         data[7] = getDistance();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
@@ -173,7 +171,7 @@ void loop()
         if(cnt>=5){mode=1;break;}
       }
       // Repeats the previous lines from 165 to 15 degrees
-      for(int i=165;i>15;i--){
+      for(int i=165;i>15;i--){  
         ultrasonicServo.write(i);
         delay(50);
         data[7] = getDistance();// Calls a function for calculating the distance measured by the Ultrasonic sensor for each degree
@@ -184,11 +182,7 @@ void loop()
         if(cnt>=5){mode=1;break;}
       }
    }
-   */
 }
-
-
-
 void receiveData(){
    if ( radio.available()) {            // if receive the data
     while (radio.available()) {         // read all the data
@@ -206,8 +200,10 @@ void receiveData(){
 //      tone(buzzerPin, 2000);
 //      noTone(buzzerPin);
    }
-
+  
 }
+
+
 void ctrlCar0(byte dirServoDegree,byte ultrasonicServoDegree, bool motorDir, byte motorSpd) {
   dirServo.write(dirServoDegree + dirServoOffset);
   if(mode==1){ultrasonicServo.write(ultrasonicServoDegree + ultrasonicServoOffset);}
