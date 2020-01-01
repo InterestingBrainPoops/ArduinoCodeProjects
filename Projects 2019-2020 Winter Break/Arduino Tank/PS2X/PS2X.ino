@@ -10,15 +10,15 @@ void setup()
   ps2x = mMotorDriver.getSensor(E_PS2X);
   rgb = mMotorDriver.getSensor(E_RGB);
   mMotorDriver.begin(50);
-      int OldNums[4];
-      char JoyStickNames[4] = ["ps2x->Analog(PSS_RY)","ps2x->Analog(PSS_RX)","ps2x->Analog(PSS_LY)","ps2x->Analog(PSS_LX)"];
-      for (i = 0; i < 5; i ++;){
-        OldNums[i] = JoyStickNames[i];
-      }
 }
 
 void loop()
 {
+  int OldNums[4];
+  int JoyStickNames[4] = {ps2x->Analog(PSS_RY),ps2x->Analog(PSS_RX),ps2x->Analog(PSS_LY),ps2x->Analog(PSS_LX)};
+  for (int i = 0; i < 5; i ++){
+    OldNums[i] = JoyStickNames[i];
+  }
   static int vibrate = 0;
   byte PSS_X = 0, PSS_Y = 0;
   ps2x->read_gamepad(false, vibrate); // read controller and set large motor to spin at 'vibrate' speed
@@ -72,10 +72,7 @@ void loop()
           Serial.print(",");
           Serial.println(ps2x->Analog(PSS_RX), DEC);
         }
-        Serial.println(JoyStickNames);
-        for (i = 0; i < 5; i ++;){
-          OldNums[i] = JoyStickNames[i];
-        }
+        for(int i = 0; i< 5; i++){Serial.println(JoyStickNames[i]);}
   }
   delay(50);
 }
