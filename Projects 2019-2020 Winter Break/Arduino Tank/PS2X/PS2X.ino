@@ -3,24 +3,36 @@ Emakefun_MotorDriver mMotorDriver = Emakefun_MotorDriver();
 Emakefun_Servo *mServo1 = mMotorDriver.getServo(1);
 PS2X *ps2x;
 RGBLed *rgb;
-
+   
 void setup()
-{
+{  
   Serial.begin(9600);
   ps2x = mMotorDriver.getSensor(E_PS2X);
   rgb = mMotorDriver.getSensor(E_RGB);
   mMotorDriver.begin(50);
   mMotorDriver.getSensor(E_ULTRASONIC);
-}
-
+   
+}  
+    
+int DistGet(){
+digitalWrite(A2, HIGH);
+delayMicroseconds(10);
+digitalWrite(A2, LOW);
+// Reads the echoPin, returns the sound wave travel time in microseconds
+int duration = pulseIn(A3, HIGH);
+// Calculating the distance
+return duration*0.034/2;
+      
+}   
 void loop()
-{
-  int OldNums[4];
-  int JoyStickNames[4] = {ps2x->Analog(PSS_RY),ps2x->Analog(PSS_RX),ps2x->Analog(PSS_LY),ps2x->Analog(PSS_LX)};
-  for (int i = 0; i < 5; i ++){
-    OldNums[i] = JoyStickNames[i];
-  }
-  static int vibrate = 0;
+{    
+  int vibrate = 0;
+  Serial.println(DistGet());
+  if (DistGet() <=10){
+      vibrate = 250;
+  }else{
+      vibrate = 0;
+  } 
   byte PSS_X = 0, PSS_Y = 0;
   ps2x->read_gamepad(false, vibrate); // read controller and set large motor to spin at 'vibrate' speed
   if (ps2x->ButtonDataByte()) {
@@ -40,7 +52,8 @@ void loop()
       rgb->SetRgbColor(E_RGB_ALL, RGB_RED);
       Serial.println("PSB_PAD_DOWN");
     }
-    vibrate = ps2x->Analog(PSAB_CROSS);  //this will set the large motor vibrate speed based on how hard you press the blue (X) button
+    
+    //vibrate = ps2x->Analog(PSAB_CROSS);  //this will set the large motor vibrate speed based on how hard you press the blue (X) button
     if (ps2x->Button(PSB_CROSS)) {             //will be TRUE if button was JUST pressed OR released
       rgb->SetRgbColor(E_RGB_LEFT, RGB_GREEN);
       Serial.println("PSB_CROSS");
@@ -73,6 +86,6 @@ void loop()
           Serial.print(",");
           Serial.println(ps2x->Analog(PSS_RX), DEC);
         }
-  }
+  } 
   delay(50);
-}
+}   
