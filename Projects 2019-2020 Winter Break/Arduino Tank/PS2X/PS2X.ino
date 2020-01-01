@@ -10,6 +10,7 @@ void setup()
   ps2x = mMotorDriver.getSensor(E_PS2X);
   rgb = mMotorDriver.getSensor(E_RGB);
   mMotorDriver.begin(50);
+  mMotorDriver.getSensor(E_ULTRASONIC);
 }
 
 void loop()
@@ -72,7 +73,6 @@ void loop()
           Serial.print(",");
           Serial.println(ps2x->Analog(PSS_RX), DEC);
         }
-        for(int i = 0; i< 5; i++){Serial.println(JoyStickNames[i]);}
   }
   delay(50);
 }
